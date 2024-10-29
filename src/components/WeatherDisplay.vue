@@ -1,16 +1,17 @@
 <template>
-    <div v-if="weather">
-      <h3>Meteo per {{ weather.city_name }}</h3>
-      <p>Temperatura: {{ weather.temperature }}°C</p>
-      <p>Umidità: {{ weather.humidity }}%</p>
-    </div>
-  </template>
-  
-  <script setup>
-  import { defineProps } from 'vue';
-  
-  const props = defineProps({
-    weather: Object
-  });
-  </script>
-  
+  <div v-if="city && temperature !== null">
+    <h3>Meteo per {{ city }}</h3>
+    <p>Temperatura: {{ temperature }}°C</p>
+    <p>Umidità: {{ humidity }}%</p>
+    <p>Velocità del Vento: {{ windSpeed }} km/h</p>
+  </div>
+</template>
+
+<script setup>
+const props = defineProps({
+  city: String,
+  temperature: Number,
+  humidity: Number,
+  windSpeed: Number
+});
+</script>
