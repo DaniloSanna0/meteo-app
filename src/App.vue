@@ -1,30 +1,38 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
   <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+    <Search @search-city="fetchWeather" />
+    <WeatherDisplay v-if="weatherData" :weather="weatherData" />
+    <FavoritesList :favorites="favorites" @remove-favorite="removeFavorite" />
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+<script setup>
+import { ref, onMounted } from 'vue';
+import Search from './components/Search.vue';
+import WeatherDisplay from './components/WeatherDisplay.vue';
+import FavoritesList from './components/FavoritesList.vue';
+import { getWeatherData } from './services/weatherService';
+
+const weatherData = ref(null);
+const favorites = ref([]);
+
+async function fetchWeather(city) {
+  weatherData.value = await getWeatherData(city);
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+
+function saveFavorite(city) {
+  if (!favorites.value.includes(city)) {
+    favorites.value.push(city);
+    localStorage.setItem('favorites', JSON.stringify(favorites.value));
+  }
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+onMounted(() => {
+  favorites.value = JSON.parse(localStorage.getItem('favorites') || '[]');
+});
+
+function removeFavorite(city) {
+  favorites.value = favorites.value.filter(fav => fav !== city);
+  localStorage.setItem('favorites', JSON.stringify(favorites.value));
 }
-</style>
+</script>
